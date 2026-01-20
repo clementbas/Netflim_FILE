@@ -1,8 +1,10 @@
 import axios from 'axios';
+import { env } from './env.js';
 
 export const dataService = axios.create({
-  baseURL: process.env.DATA_SERVICE_URL || 'http://localhost:4002',
+  baseURL: env.dataServiceUrl,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'x-service-token': env.serviceToken
   }
 });
