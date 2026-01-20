@@ -25,19 +25,15 @@ router.post(
   uploadFile
 );
 
-// Streaming (au choix : protégé ou non)
 router.get(
-  '/stream/:filename',
+  '/:id/stream',
   authenticate,
-  validate(streamSchema),
   stream
 );
 
-// Suppression protégée
 router.delete(
-  '/:folder/:filename',
+  '/:id',
   authenticate,
-  validate(deleteSchema),
   removeFile
 );
 
