@@ -1,37 +1,37 @@
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
 import { env } from './env.js';
+
+const ensureDirExists = (dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+};
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    let folder = 'others';
+    const { category = 'others', folder = 'default' } = req.body;
 
-    if (file.mimetype.startsWith('video')) folder = 'videos';
-    if (file.mimetype.startsWith('image')) folder = 'images';
+    let type = 'others';
+    if (file.mimetype.startsWith('video')) type = 'videos';
+    if (file.mimetype.startsWith('image')) type = 'images';
 
-    cb(null, path.join(env.uploadDir, folder));
+    const uploadPath = path.join(
+      env.uploadDir,
+      type,
+      category,
+      folder
+    );
+
+    ensureDirExists(uploadPath);
+    cb(null, uploadPath);
   },
+
   filename: (req, file, cb) => {
     const uniqueName = `${Date.now()}-${file.originalname}`;
     cb(null, uniqueName);
   }
 });
 
-const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype.startsWith('video') ||
-    file.mimetype.startsWith('image')
-  ) {
-    cb(null, true);
-  } else {
-    cb(new Error('Type de fichier non autorisé'), false);
-  }
-};
-
-export const upload = multer({
-  storage,
-  fileFilter,
-  limits: {
-    fileSize: env.maxFileSize
-  }
-});
+export const upload = multer({ storage });

@@ -7,5 +7,7 @@ export const env = {
   uploadDir: process.env.UPLOAD_DIR || 'uploads',
   maxFileSize: Number(process.env.MAX_FILE_SIZE) || 500_000_000,
   jwtSecret: process.env.JWT_SECRET,
-  jwtEnabled: process.env.JWT_ENABLED === 'true'
+  jwtEnabled: process.env.JWT_ENABLED === 'true',
+  dataServiceUrl: process.env.DATA_SERVICE_URL || 'http://localhost:4000/api',
+  serviceToken: process.env.SERVICE_TOKEN || 'default-service-token'
 };

@@ -1,25 +1,57 @@
-import { deleteFile, getFilePath } from '../services/file.service.js';
+import { deleteFile } from '../services/file.service.js';
 import { streamVideo } from '../services/streaming.service.js';
+import {
+  saveFileInDb,
+  getFileFromDb,
+  deleteFileFromDb
+} from '../services/file-db.service.js';
+import { ApiError } from '../utils/apiError.js';
 
-export const uploadFile = (req, res) => {
+export const uploadFile = async (req, res) => {
+  const filePath = req.file.path;
+  const type = req.file.mimetype.startsWith('video') ? 'VIDEO' : 'IMAGE';
+
+  const dbRecord = await saveFileInDb({
+    path: filePath,
+    type,
+    ownerId: req.user.id
+  });
+
   res.status(201).json({
     success: true,
-    file: req.file.filename
+    file: {
+      id: dbRecord.id,
+      path: filePath
+    }
   });
 };
 
-export const stream = (req, res) => {
-  const { filename } = req.params;
-  const filePath = getFilePath('videos', filename);
+export const stream = async (req, res) => {
+  const { id } = req.params;
 
-  streamVideo(req, res, filePath);
+  const file = await getFileFromDb(id);
+
+  if (!file) {
+    throw new ApiError(404, 'Fichier introuvable');
+  }
+
+  streamVideo(req, res, file.path);
 };
 
-export const removeFile = (req, res) => {
-  const { folder, filename } = req.params;
-  const filePath = getFilePath(folder, filename);
+export const removeFile = async (req, res) => {
+  const { id } = req.params;
 
-  deleteFile(filePath);
+  const file = await getFileFromDb(id);
+
+  if (!file) {
+    throw new ApiError(404, 'Fichier introuvable');
+  }
+
+  // 1️⃣ Supprimer le fichier disque
+  deleteFile(file.path);
+
+  // 2️⃣ Supprimer l’entrée en base
+  await deleteFileFromDb(id);
 
   res.json({ success: true });
 };
