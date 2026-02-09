@@ -1,3 +1,4 @@
+import path from 'path';
 import { deleteFile } from '../services/file.service.js';
 import { streamVideo } from '../services/streaming.service.js';
 import {
@@ -33,6 +34,16 @@ export const stream = async (req, res) => {
 
   if (!file) {
     throw new ApiError(404, 'Fichier introuvable');
+  }
+
+  if (file.type === 'IMAGE') {
+    const absolutePath = path.isAbsolute(file.path)
+      ? file.path
+      : path.join(process.cwd(), file.path);
+
+    res.type(path.extname(file.path));
+    res.sendFile(absolutePath);
+    return;
   }
 
   streamVideo(req, res, file.path);

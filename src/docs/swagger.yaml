@@ -1,0 +1,218 @@
+openapi: 3.0.3
+info:
+  title: Netflim File API
+  version: 1.0.0
+  description: API for uploading, streaming, and deleting files.
+servers:
+  - url: http://localhost:4003
+paths:
+  /files/upload:
+    post:
+      summary: Upload a file
+      description: Upload a file (image or video) to the service.
+      tags:
+        - Files
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                  description: Category used to build the upload path.
+                  example: exempleFruit
+                folder:
+                  type: string
+                  description: Folder used to build the upload path.
+                  example: exemplePomme
+                file:
+                  type: string
+                  format: binary
+              required:
+                - file
+      responses:
+        "201":
+          description: File uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadResponse"
+              examples:
+                success:
+                  value:
+                    success: true
+                    file:
+                      id: "9f9b2c0a-4b59-4cc8-8f6e-6f2f7e8b2a10"
+                      path: "uploads/videos/sample.mp4"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /files/{id}/stream:
+    get:
+      summary: Stream a video
+      description: Stream a video file using HTTP range requests.
+      tags:
+        - Files
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: Range
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Byte range, e.g. "bytes=0-"
+      responses:
+        "200":
+          description: Full content
+          content:
+            video/mp4:
+              schema:
+                type: string
+                format: binary
+        "206":
+          description: Partial content
+          content:
+            video/mp4:
+              schema:
+                type: string
+                format: binary
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: File not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /files/{id}:
+    delete:
+      summary: Delete a file
+      description: Remove a file from disk and database.
+      tags:
+        - Files
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: File deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+              examples:
+                success:
+                  value:
+                    success: true
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: File not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UploadResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        file:
+          $ref: "#/components/schemas/FileInfo"
+      required:
+        - success
+        - file
+    DeleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required:
+        - success
+    FileInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        path:
+          type: string
+      required:
+        - id
+        - path
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        error:
+          $ref: "#/components/schemas/ErrorDetail"
+      required:
+        - success
+        - error
+    ErrorDetail:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      required:
+        - message
+        - status
