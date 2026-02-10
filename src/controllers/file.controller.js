@@ -7,15 +7,22 @@ import {
   deleteFileFromDb
 } from '../services/file-db.service.js';
 import { ApiError } from '../utils/apiError.js';
+import { validateCategoryByName } from '../services/category.service.js';
 
 export const uploadFile = async (req, res) => {
   const filePath = req.file.path;
   const type = req.file.mimetype.startsWith('video') ? 'VIDEO' : 'IMAGE';
+  const { categoryName, category } = req.body;
+  const resolvedCategoryName = categoryName || category;
+
+  // Valider que la catégorie existe et récupérer son ID
+  const categoryId = await validateCategoryByName(resolvedCategoryName);
 
   const dbRecord = await saveFileInDb({
     path: filePath,
     type,
-    ownerId: req.user.id
+    ownerId: req.user.id,
+    categoryId
   });
 
   res.status(201).json({

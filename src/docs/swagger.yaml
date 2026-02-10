@@ -21,19 +21,24 @@ paths:
             schema:
               type: object
               properties:
+                categoryName:
+                  type: string
+                  description: Category name used to build the upload path.
+                  example: Action
                 category:
                   type: string
-                  description: Category used to build the upload path.
-                  example: exempleFruit
+                  description: Category name (legacy alias of categoryName).
+                  example: Action
                 folder:
                   type: string
                   description: Folder used to build the upload path.
-                  example: exemplePomme
+                  example: Avatar
                 file:
                   type: string
                   format: binary
               required:
                 - file
+                - folder
       responses:
         "201":
           description: File uploaded
@@ -47,7 +52,7 @@ paths:
                     success: true
                     file:
                       id: "9f9b2c0a-4b59-4cc8-8f6e-6f2f7e8b2a10"
-                      path: "uploads/videos/sample.mp4"
+                      path: "uploads/Action/Avatar/sample.mp4"
         "400":
           description: Invalid request
           content:

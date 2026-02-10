@@ -11,16 +11,12 @@ const ensureDirExists = (dir) => {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const { category = 'others', folder = 'default' } = req.body;
-
-    let type = 'others';
-    if (file.mimetype.startsWith('video')) type = 'videos';
-    if (file.mimetype.startsWith('image')) type = 'images';
+    const { categoryName, category, folder = 'default' } = req.body;
+    const resolvedCategory = categoryName || category || 'others';
 
     const uploadPath = path.join(
       env.uploadDir,
-      type,
-      category,
+      resolvedCategory,
       folder
     );
 

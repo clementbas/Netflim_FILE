@@ -189,7 +189,7 @@ x-service-token: <SERVICE_TOKEN>
 	"success": true,
 	"file": {
 		"id": "9f9b2c0a-4b59-4cc8-8f6e-6f2f7e8b2a10",
-		"path": "uploads/videos/exempleFruit/exemplePomme/1700000000000-sample.mp4"
+		"path": "uploads/Action/Avatar/1700000000000-sample.mp4"
 	}
 }
 ```
@@ -223,8 +223,8 @@ x-service-token: <SERVICE_TOKEN>
 ```bash
 curl -X POST http://localhost:4003/files/upload \
 	-H "Authorization: Bearer YOUR_JWT" \
-	-F "category=fruit" \
-	-F "folder=pomme" \
+	-F "categoryName=Action" \
+	-F "folder=Avatar" \
 	-F "file=@./sample.mp4"
 ```
 
@@ -234,7 +234,7 @@ curl -X POST http://localhost:4003/files/upload \
 	"success": true,
 	"file": {
 		"id": "9f9b2c0a-4b59-4cc8-8f6e-6f2f7e8b2a10",
-		"path": "uploads/videos/fruit/pomme/1700000000000-sample.mp4"
+		"path": "uploads/Action/Avatar/1700000000000-sample.mp4"
 	}
 }
 ```
@@ -329,8 +329,8 @@ curl -X GET http://localhost:4003/files/invalid-id/stream \
 # category et folder sont utilises pour structurer les uploads
 curl -X POST http://localhost:4003/files/upload \
 	-H "Authorization: Bearer $JWT" \
-	-F "category=film" \
-	-F "folder=avatar" \
+	-F "categoryName=Action" \
+	-F "folder=Avatar" \
 	-F "file=@./poster.jpg"
 ```
 

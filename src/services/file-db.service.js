@@ -1,10 +1,11 @@
 import { dataService } from '../config/dataService.client.js';
 
-export const saveFileInDb = async ({ path, type, ownerId }) => {
+export const saveFileInDb = async ({ path, type, ownerId, categoryId }) => {
   const response = await dataService.post('/files', {
     path,
     type,
-    ownerId
+    ownerId,
+    categoryId
   });
 
   return response.data;

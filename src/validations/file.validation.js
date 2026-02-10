@@ -1,7 +1,11 @@
 import Joi from 'joi';
 
 export const uploadSchema = Joi.object({
-  body: Joi.object().optional(),
+  body: Joi.object({
+    categoryName: Joi.string().min(1),
+    category: Joi.string().min(1),
+    folder: Joi.string().min(1).required()
+  }).or('categoryName', 'category'),
   params: Joi.object().empty(),
   query: Joi.object().empty()
 });
