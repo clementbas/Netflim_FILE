@@ -29,8 +29,12 @@ export const uploadFile = async (req, res) => {
     success: true,
     file: {
       id: dbRecord.id,
-      path: filePath
-    }
+      path: filePath,
+      type
+    },
+    next: type === 'VIDEO'
+      ? `Utilisez l'id (${dbRecord.id}) dans la route POST /api/series/seasons/:seasonId/episodes pour associer cette vidéo à un épisode via le champ "video_id"`
+      : `Utilisez l'id (${dbRecord.id}) comme "poster_id" lors de la création ou mise à jour d'un film/série`
   });
 };
 

@@ -352,8 +352,15 @@ fi
 
 ---
 
+## Notes importantes
+
+- Le port par défaut est **5001** (non 4003)
+- `MAX_FILE_SIZE` dans le `.env` contrôle la taille max en octets (défaut : `10485760` = 10 MB)
+- L'upload retourne un `id` à utiliser ensuite dans DATA pour associer le fichier à un film/série/épisode
+- Le `JWT_SECRET` doit être **identique** dans AUTH, DATA, FILE et SMTP
+
 ## Support et contact
 
 - **GitHub**: https://github.com/clementbas/Netflim_FILE
 - **Issues**: https://github.com/clementbas/Netflim_FILE/issues
-- **Documentation Swagger**: http://localhost:4003/docs
+- **Documentation Swagger**: http://localhost:5001/docs
